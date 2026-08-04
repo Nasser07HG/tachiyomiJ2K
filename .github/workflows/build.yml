@@ -25,11 +25,11 @@ jobs:
 
       - name: Create dummy google-services.json
         run: |
-          mkdir -p app
-          echo '{"project_info": {"project_id": "dummy", "project_number": "123456789"}, "client": [{"client_info": {"mobilesdk_app_id": "1:123456789:android:123456789"}}]}' > app/google-services.json
-          mkdir -p app/src/dev app/src/standard
-          cp app/google-services.json app/src/dev/google-services.json
+          mkdir -p app/src/standard app/src/dev
+          echo '{"project_info": {"project_id": "dummy", "project_number": "123456789"}, "client": [{"client_info": {"mobilesdk_app_id": "1:123456789:android:123456789"}, "android_client_info": {"package_name": "eu.kanade.tachiyomi.j2k"}}]}0' > app/google-services.json
+          sed -i 's/0$//' app/google-services.json
           cp app/google-services.json app/src/standard/google-services.json
+          cp app/google-services.json app/src/dev/google-services.json
 
       - name: Build APK (Release)
         run: ./gradlew assembleStandardRelease -x lint -x test
