@@ -27,6 +27,8 @@ jobs:
         run: |
           mkdir -p app
           echo '{"project_info": {"project_id": "dummy"}}' > app/google-services.json
+          cp app/google-services.json app/src/dev/google-services.json || true
+          cp app/google-services.json app/src/standard/google-services.json || true
 
       - name: Build APK (Release)
         run: ./gradlew assembleRelease -x lint -x test
