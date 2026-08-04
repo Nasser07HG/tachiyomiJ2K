@@ -2,8 +2,6 @@ name: Build APK and Release
 
 on:
   workflow_dispatch:
-
-  
   
 jobs:
   build:
@@ -26,7 +24,9 @@ jobs:
         run: chmod +x gradlew
 
       - name: Create dummy google-services.json
-        run: mkdir -p app && echo "{\"project_info\": {\"project_id\": \"dummy\"}}" > app/google-services.json
+        run: |
+          mkdir -p app
+          echo '{"project_info": {"project_id": "dummy"}}' > app/google-services.json
 
       - name: Build APK (Release)
         run: ./gradlew assembleRelease -x lint -x test
@@ -41,4 +41,3 @@ jobs:
         with:
           name: TachiyomiJ2K-Release-Build
           path: final_output/app-release.zip
-          
