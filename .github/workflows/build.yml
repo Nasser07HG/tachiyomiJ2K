@@ -23,13 +23,10 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Create dummy google-services.json
+      - name: Disable Google Services Plugin
         run: |
-          mkdir -p app/src/standard app/src/dev
-          echo '{"project_info": {"project_id": "dummy", "project_number": "123456789"}, "client": [{"client_info": {"mobilesdk_app_id": "1:123456789:android:123456789"}, "android_client_info": {"package_name": "eu.kanade.tachiyomi.j2k"}}]}0' > app/google-services.json
-          sed -i 's/0$//' app/google-services.json
-          cp app/google-services.json app/src/standard/google-services.json
-          cp app/google-services.json app/src/dev/google-services.json
+          find . -name "build.gradle*" -type f -exec sed -i '/google-services/d' {} +
+          rm -rf app/google-services.json app/src/*/google-services.json
 
       - name: Build APK (Release)
         run: ./gradlew assembleStandardRelease -x lint -x test
