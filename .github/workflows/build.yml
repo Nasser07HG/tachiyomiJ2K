@@ -31,7 +31,7 @@ jobs:
           cp app/google-services.json app/src/standard/google-services.json || true
 
       - name: Build APK (Release)
-        run: ./gradlew assembleRelease -x lint -x test
+        run: ./gradlew assembleStandardRelease -x lint -x test
 
       - name: Compress APK Package
         run: |
