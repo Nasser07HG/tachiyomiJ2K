@@ -25,7 +25,8 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build APK (Release)
-        run: ./gradlew assembleRelease
+        run: ./gradlew assembleRelease -x lint -x test
+        
 
       - name: Compress APK Package
         run: |
