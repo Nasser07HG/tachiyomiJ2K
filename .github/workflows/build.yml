@@ -2,7 +2,7 @@ name: Build APK and Release
 
 on:
   workflow_dispatch:
-  
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,10 +23,42 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Disable Google Services Plugin
+      - name: Create dummy google-services.json
         run: |
-          find . -name "build.gradle*" -type f -exec sed -i '/google-services/d' {} +
-          rm -rf app/google-services.json app/src/*/google-services.json
+          mkdir -p app app/src/standard app/src/dev
+          cat << 'EOF' > app/google-services.json
+          {
+            "project_info": {
+              "project_number": "123456789012",
+              "project_id": "dummy-project",
+              "storage_bucket": "dummy.appspot.com"
+            },
+            "client": [
+              {
+                "client_info": {
+                  "mobilesdk_app_id": "1:123456789012:android:1234567890123456",
+                  "android_client_info": {
+                    "package_name": "eu.kanade.tachiyomi.j2k"
+                  }
+                },
+                "oauth_client": [],
+                "api_key": [
+                  {
+                    "current_key": "dummy_api_key"
+                  }
+                ],
+                "services": {
+                  "appinvite_service": {
+                    "other_platform_oauth_client": []
+                  }
+                }
+              }
+            ],
+            "configuration_version": "1"
+          }
+          EOF
+          cp app/google-services.json app/src/standard/google-services.json
+          cp app/google-services.json app/src/dev/google-services.json
 
       - name: Build APK (Release)
         run: ./gradlew assembleStandardRelease -x lint -x test
@@ -34,7 +66,7 @@ jobs:
       - name: Compress APK Package
         run: |
           mkdir -p final_output
-          zip -j final_output/app-release.zip app/build/outputs/apk/release/*.apk
+          zip -j final_output/app-release.zip app/build/outputs/apk/standard/release/*.apk
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
