@@ -44,7 +44,7 @@ jobs:
                 "oauth_client": [],
                 "api_key": [
                   {
-                    "current_key": "dummy_api_key"
+                    "current_key": "dummykey"
                   }
                 ],
                 "services": {
@@ -63,18 +63,20 @@ jobs:
       - name: Build APK (Release)
         run: ./gradlew assembleStandardRelease -x lint -x test
 
-      - name: Sign APK
-        uses: rxdew/sign-apk-action@v1
-        with:
-          apk-path: app/build/outputs/apk/standard/release/
+      - name: Sign APK (armeabi-v7a)
+        run: |
+          keytool -genkeypair -v -keystore release.keystore -alias releasekey -keyalg RSA -keysize 2048 -validity 10000 -storepass password -keypass password -dname "CN=Android, OU=Dev, O=App, L=City, S=State, C=US"
+          APK_PATH=$(find app/build/outputs/apk/standard/release/ -name "*armeabi-v7a*.apk" | head -n 1)
+          $ANDROID_HOME/build-tools/34.0.0/apksigner sign --ks release.keystore --ks-key-alias releasekey --ks-pass pass:password --key-pass pass:password --out app-signed.apk "$APK_PATH"
 
-      - name: Compress APK Package (armeabi-v7a Only)
+      - name: Compress APK Package
         run: |
           mkdir -p final_output
-          find app/build/outputs/apk/standard/release/ -name "*signed.apk" -name "*armeabi-v7a*" -exec zip -j final_output/app-release-armeabi-v7a.zip {} +
+          zip -j final_output/app-release-armeabi-v7a-signed.zip app-signed.apk
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: TachiyomiJ2K-armeabi-v7a-Signed
-          path: final_output/app-release-armeabi-v7a.zip
+          path: final_output/app-release-armeabi-v7a-signed.zip
+          
