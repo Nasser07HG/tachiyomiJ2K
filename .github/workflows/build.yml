@@ -63,14 +63,18 @@ jobs:
       - name: Build APK (Release)
         run: ./gradlew assembleStandardRelease -x lint -x test
 
+      - name: Sign APK
+        uses: rxdew/sign-apk-action@v1
+        with:
+          apk-path: app/build/outputs/apk/standard/release/
+
       - name: Compress APK Package (armeabi-v7a Only)
         run: |
           mkdir -p final_output
-          find app/build/outputs/apk/standard/release/ -name "*armeabi-v7a*.apk" -exec zip -j final_output/app-release-armeabi-v7a.zip {} +
+          find app/build/outputs/apk/standard/release/ -name "*signed.apk" -name "*armeabi-v7a*" -exec zip -j final_output/app-release-armeabi-v7a.zip {} +
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: TachiyomiJ2K-armeabi-v7a-Release
+          name: TachiyomiJ2K-armeabi-v7a-Signed
           path: final_output/app-release-armeabi-v7a.zip
-          
