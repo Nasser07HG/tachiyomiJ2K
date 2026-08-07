@@ -32,9 +32,6 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
 
-        // إجبار التجميع على تضمين الإنجليزية والعربية فقط
-        resourceConfigurations += listOf("en", "ar")
-
         buildConfigField("String", "COMMIT_COUNT", "\"${getCommitCount()}\"")
         buildConfigField("String", "BETA_COUNT", "\"${getBetaCount()}\"")
         buildConfigField("String", "COMMIT_SHA", "\"${getGitSha()}\"")
@@ -50,6 +47,11 @@ android {
                 this.arguments("-DHAVE_LIBJXL=FALSE")
             }
         }
+    }
+
+    androidResources {
+        localeFilters.clear()
+        localeFilters.addAll(listOf("en", "ar"))
     }
 
     splits {
