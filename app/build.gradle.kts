@@ -32,6 +32,9 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
 
+        // إجبار التجميع على تضمين الإنجليزية والعربية فقط
+        resourceConfigurations += listOf("en", "ar")
+
         buildConfigField("String", "COMMIT_COUNT", "\"${getCommitCount()}\"")
         buildConfigField("String", "BETA_COUNT", "\"${getBetaCount()}\"")
         buildConfigField("String", "COMMIT_SHA", "\"${getGitSha()}\"")
@@ -95,7 +98,7 @@ android {
         }
         create("dev") {
             androidResources.localeFilters.clear()
-            androidResources.localeFilters.add("en")
+            androidResources.localeFilters.addAll(listOf("en", "ar"))
         }
     }
 
@@ -189,15 +192,6 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp-brotli:$okhttpVersion")
     implementation("com.squareup.okhttp3:okhttp-zstd:$okhttpVersion")
     implementation("com.squareup.okio:okio:3.18.0")
-
-    // Chucker
-//    val chuckerVersion = "3.5.2"
-//    debugImplementation("com.github.ChuckerTeam.Chucker:library:$chuckerVersion")
-//    releaseImplementation("com.github.ChuckerTeam.Chucker:library-no-op:$chuckerVersion")
-//    add("betaImplementation", "com.github.ChuckerTeam.Chucker:library-no-op:$chuckerVersion")
-
-    // TEMP: diagnosing theme-swap OOM, remove once resolved
-//    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
 
     implementation(kotlin("reflect", version = AndroidVersions.kotlin))
 
@@ -297,7 +291,6 @@ dependencies {
 }
 
 tasks {
-    // See https://kotlinlang.org/docs/reference/experimental.html#experimental-status-of-experimental-api(-markers)
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         compilerOptions.freeCompilerArgs.addAll(
             "-Xcontext-receivers",
@@ -320,22 +313,8 @@ tasks {
             "-opt-in=kotlinx.coroutines.InternalCoroutinesApi",
             "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
         )
-
-//        if (project.findProperty("tachiyomi.enableComposeCompilerMetrics") == "true") {
-//            compilerOptions.freeCompilerArgs.addAll(
-//                "-P",
-//                "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" +
-//                        project.layout.buildDirectory + "/compose_metrics",
-//            )
-//            compilerOptions.freeCompilerArgs.addAll(
-//                "-P",
-//                "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" +
-//                        project.layout.buildDirectory + "/compose_metrics",
-//            )
-//        }
     }
 
-    // Duplicating Hebrew string assets due to some locale code issues on different devices
     val copyHebrewStrings = task("copyHebrewStrings", type = Copy::class) {
         from("./src/main/res/values-he")
         into("./src/main/res/values-iw")
