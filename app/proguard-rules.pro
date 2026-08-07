@@ -91,3 +91,9 @@
     public <init>();
     public void destroy();
 }
+
+# Fix Zstd Compression Crash
+-keep class com.squareup.zstd.** { *; }
+-dontwarn com.squareup.zstd.**
+-keep class okhttp3.zstd.** { *; }
+-dontwarn okhttp3.zstd.**
